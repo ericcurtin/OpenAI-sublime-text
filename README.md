@@ -5,19 +5,10 @@
 
 Cursor level of AI assistance for Sublime Text. I mean it.
 
-Works with all OpenAI'ish API: [llama.cpp](https://github.com/ggerganov/llama.cpp) server, [ollama](https://ollama.com) or whatever third party LLM hosting. Claude API support coming soon.
+Works with OpenAI Responses, Anthropic Claude, Google Gemini and the whole zoo of OpenAI-compatible APIs: [llama.cpp](https://github.com/ggerganov/llama.cpp) server, [ollama](https://ollama.com) or whatever third party LLM hosting you decided to trust today.
 
 
 ![](static/media/ai_chat_left_full.png)
-
-> [!NOTE]
-> This plugin is in its pretty much finite state as it is, with persistent dialog storage and Phantoms support. So
-> - No more connector will added here (Antropic, Gemini, etc)
-> - No more tools support will be added also.
-> - Same as no MCP server support will be provided as well.[^1]
-> 
-> The good news is that all of those available out of the box in my next [CodexSublime](https://github.com/yaroslavyaroslav/CodexSublime) plugin which leverages all these thing on [openai/codex](https://github.com/openai/codex) obviously. Check it out.
-
 
 ## Features
 
@@ -37,7 +28,7 @@ Works with all OpenAI'ish API: [llama.cpp](https://github.com/ggerganov/llama.cp
 - Sublime Text 4
 - **llama.cpp**, **ollama** installed _OR_
 - Remote llm service provider API key, e.g. [OpenAI](https://platform.openai.com)
-- Anthropic API key [coming soon].
+- Optional [Anthropic](https://www.anthropic.com/api), [Google Gemini](https://ai.google.dev/) or other provider API key depending on your assistant setup.
 
 ## Installation
 
