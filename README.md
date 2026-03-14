@@ -158,15 +158,28 @@ Phantom is the overlay UI placed inline in the editor view (see the picture belo
 
 1. Replace `"url"` setting of a given model to point to whatever host you're server running on (e.g.`http://localhost:8080/v1/chat/completions`).
 2. Provide a `"token"` if your provider required one.
-3. Tweak `"chat_model"` to a model of your choice and you're set.
+3. Set `"api_type": "plain_text"` for older OpenAI-compatible hosts or `"api_type": "open_ai"` for modern chat-completions implementations.
+4. Tweak `"chat_model"` to a model of your choice and you're set.
 
 ### Google Gemini models
 
-1. Replace `"url"` setting of a given model to point to the [Google Gemini OpenAI compatible API](https://ai.google.dev/gemini-api/docs/openai#rest): `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`.
-2. Provide a `"token"` if your provider required one.
-3. Tweak `"chat_model"` to [a model from the list of supported models](https://ai.google.dev/gemini-api/docs/models#model-variations).
+1. Set `"url"` to the Gemini API root: `https://generativelanguage.googleapis.com/v1beta`.
+2. Set `"api_type": "google"`.
+3. Provide a `"token"` if your provider required one.
+4. Tweak `"chat_model"` to [a model from the list of supported models](https://ai.google.dev/gemini-api/docs/models#model-variations).
 
-You can read more [about OpenAI compatibility in the Gemini documentation](https://ai.google.dev/gemini-api/docs/openai#rest).
+### OpenAI Responses API
+
+1. Set `"url"` to `https://api.openai.com/v1/responses`.
+2. Set `"api_type": "open_ai_responses"`.
+3. Use an OpenAI Responses-capable model such as `gpt-5`.
+
+### Anthropic Claude models
+
+1. Set `"url"` to `https://api.anthropic.com/v1/messages`.
+2. Set `"api_type": "anthropic"`.
+3. Provide your Anthropic API key as `"token"`.
+4. Set `"chat_model"` to the Claude model you want to use.
 
 > [!NOTE]
 > You can set both `url` and `token` either global or on per assistant instance basis, thus being capable to freely switching between closed source and open sourced models within a single session.

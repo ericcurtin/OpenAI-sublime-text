@@ -174,12 +174,13 @@
             // docs: https://platform.openai.com/docs/api-reference/parameter-details
             "presence_penalty": 0.0,
 
-            // API's are not quite compatiable with each other
-            // Thus you should specify the api for the given assistant.
-            // `plain_text` — default option.
-            // - `open_ai`, new OpenAI API specs, with reasoning efforts support etc
-            // - `plain_text`, old OpenAI API spec compatiable with most of 3rd parties hosts
-            // - `antropic` (UNIMPLEMENTED), api that forces strict order of user/assistant messages in the request.
+            // APIs are not fully compatible with each other.
+            // Pick the wire protocol that matches the remote endpoint.
+            // - `open_ai`: classic `/v1/chat/completions`
+            // - `plain_text`: legacy OpenAI-compatible chat-completions mode for older/self-hosted endpoints
+            // - `open_ai_responses`: OpenAI `/v1/responses`
+            // - `anthropic`: Anthropic Messages API
+            // - `google`: Google Gemini native `generateContent` / `streamGenerateContent`
             "api_type": "open_ai"
         },
 
@@ -203,11 +204,30 @@
         },
         {
             "name": "Gemini Assistant",
-            "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+            "url": "https://generativelanguage.googleapis.com/v1beta",
             "token": "YOUR_TOKEN_HERE",
             "chat_model": "gemini-2.5-flash-preview-04-17",
             "assistant_role": "You are a senior code assistant",
             "max_tokens": 4000,
+            "api_type": "google"
+        },
+        {
+            "name": "OpenAI Responses Assistant",
+            "url": "https://api.openai.com/v1/responses",
+            "token": "YOUR_TOKEN_HERE",
+            "chat_model": "gpt-5",
+            "assistant_role": "You are a senior code assistant",
+            "max_completion_tokens": 4000,
+            "api_type": "open_ai_responses"
+        },
+        {
+            "name": "Claude Assistant",
+            "url": "https://api.anthropic.com/v1/messages",
+            "token": "YOUR_TOKEN_HERE",
+            "chat_model": "claude-sonnet-4-5",
+            "assistant_role": "You are a senior code assistant",
+            "max_tokens": 4000,
+            "api_type": "anthropic"
         }
     ]
 }
