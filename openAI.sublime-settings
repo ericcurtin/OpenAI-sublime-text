@@ -1,3 +1,21 @@
+//
+// PROJECT-SPECIFIC CHAT HISTORY:
+// To maintain separate chat histories for different Sublime Text projects,
+// you can define a 'cache_prefix' within your .sublime-project file.
+// Add the following structure to your project settings (e.g., Project > Edit Project):
+//
+// {
+//     "settings": {
+//         "ai_assistant": {
+//             "cache_prefix": "/path/to/your/project/.openai_cache/" // Or any unique path
+//         }
+//     }
+// }
+//
+// The plugin will then store chat history for that project in the specified directory.
+// If not set, a global cache path is used.
+// See README.md for more details on chat history management.
+//
 {
     // Apply Sublime Text markdown syntax highlight to OpenAI completion output view text.
     // Affects only `"output_mode": "view"`.
@@ -84,7 +102,7 @@
             // It can act as a different kind of person. Recently in this plugin it was acting
             // like as a code assistant. With this setting you're able to set it up more precisely.
             // E.g. "You are (rust|python|js|whatever) developer assistant", "You are an english tutor" and so on.
-            // HINT: This is either `system` or `developer` message depending on api_spec set.
+            // HINT: This is either `system` or `developer` message depending on `api_type` set.
             "assistant_role": "You are a senior code assistant",
 
             // URL for OpenAI alike API.
@@ -97,7 +115,7 @@
 
             // Toggle for function calls llm capability
             // Check if your llm supports this feature before toggling this on
-            "tools": false,
+            "tools": true,
 
             // What sampling temperature to use, between 0 and 2.
             // Higher values like 0.8 will make the output more random,
@@ -156,22 +174,24 @@
             // docs: https://platform.openai.com/docs/api-reference/parameter-details
             "presence_penalty": 0.0,
 
-            // API's are not quite compatiable with each other
-            // Thus you should specify the api for the given assistant.
-            // `plain_text` — default option.
-            // - `open_ai`, new OpenAI API specs, with reasoning efforts support etc
-            // - `plain_text`, old OpenAI API spec compatiable with most of 3rd parties hosts
-            // - `antropic` (UNIMPLEMENTED), api that forces strict order of user/assistant messages in the request.
+            // APIs are not fully compatible with each other.
+            // Pick the wire protocol that matches the remote endpoint.
+            // - `open_ai`: classic `/v1/chat/completions`
+            // - `plain_text`: legacy OpenAI-compatible chat-completions mode for older/self-hosted endpoints
+            // - `open_ai_responses`: OpenAI `/v1/responses`
+            // - `anthropic`: Anthropic Messages API
+            // - `google`: Google Gemini native `generateContent` / `streamGenerateContent`
             "api_type": "open_ai"
         },
 
         // Examples
         {
             "name": "General Assistant Localhost",
-            "url": "http://127.0.0.1:8080", // See ma, no internet connection.
+            "url": "http://0.0.0.0:1234/v1/chat/completions", // See ma, no internet connection.
             "chat_model": "Llama-3-8b-Q4-chat-hf",
             "assistant_role": "1. You are to provide clear, concise, and direct responses.\n2. Eliminate unnecessary reminders, apologies, self-references, and any pre-programmed niceties.\n3. Maintain a casual tone in your communication.\n4. Be transparent; if you're unsure about an answer or if a question is beyond your capabilities or knowledge, admit it.\n5. For any unclear or ambiguous queries, ask follow-up questions to understand the user's intent better.\n6. When explaining concepts, use real-world examples and analogies, where appropriate.\n7. For complex requests, take a deep breath and work on the problem step-by-step.\n8. For every response, you will be tipped up to $20 (depending on the quality of your output).\n10. Always look closely to **ALL** the data provided by a user. It's very important to look so closely as you can there. Ppl can die otherways.\n11. If user strictly asks you about to write the code, write the code first, without explanation, and add them only by additional user request.\n",
             "temperature": 1,
+            "tools": true,
             "max_tokens": 4000,
         },
         {
@@ -180,14 +200,34 @@
             "chat_model": "gpt-4.1-mini",
             "assistant_role": "1. You are to provide clear, concise, and direct responses.\n2. Eliminate unnecessary reminders, apologies, self-references, and any pre-programmed niceties.\n3. Maintain a casual tone in your communication.\n4. Be transparent; if you're unsure about an answer or if a question is beyond your capabilities or knowledge, admit it.\n5. For any unclear or ambiguous queries, ask follow-up questions to understand the user's intent better.\n6. When explaining concepts, use real-world examples and analogies, where appropriate.\n7. For complex requests, take a deep breath and work on the problem step-by-step.\n8. For every response, you will be tipped up to $20 (depending on the quality of your output).\n10. Always look closely to **ALL** the data provided by a user. It's very important to look so closely as you can there. Ppl can die otherways.\n11. If user strictly asks you about to write the code, write the code first, without explanation, and add them only by additional user request.",
             "max_tokens": 4000,
+            "tools": true,
         },
         {
             "name": "Gemini Assistant",
-            "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+            "url": "https://generativelanguage.googleapis.com/v1beta",
             "token": "YOUR_TOKEN_HERE",
             "chat_model": "gemini-2.5-flash-preview-04-17",
             "assistant_role": "You are a senior code assistant",
             "max_tokens": 4000,
+            "api_type": "google"
+        },
+        {
+            "name": "OpenAI Responses Assistant",
+            "url": "https://api.openai.com/v1/responses",
+            "token": "YOUR_TOKEN_HERE",
+            "chat_model": "gpt-5",
+            "assistant_role": "You are a senior code assistant",
+            "max_completion_tokens": 4000,
+            "api_type": "open_ai_responses"
+        },
+        {
+            "name": "Claude Assistant",
+            "url": "https://api.anthropic.com/v1/messages",
+            "token": "YOUR_TOKEN_HERE",
+            "chat_model": "claude-sonnet-4-5",
+            "assistant_role": "You are a senior code assistant",
+            "max_tokens": 4000,
+            "api_type": "anthropic"
         }
     ]
 }
