@@ -17,6 +17,12 @@ from .plugins.openai import Openai  # noqa: E402, F401
 from .plugins.openai_panel import OpenaiPanelCommand  # noqa: E402, F401
 from .plugins.output_panel import SharedOutputPanelListener  # noqa: E402, F401
 from .plugins.phantom_streamer import PhantomStreamer  # noqa: E402, F401
+from .plugins.input_panel import (  # noqa: E402, F401
+    OpenaiInputPanelEventListener,
+    OpenaiPasteAsCodeBlockCommand,
+    OpenaiSubmitInputPanelCommand,
+    OpenaiSubmitInputPanelFromViewCommand,
+)
 from .plugins.settings_reloader import ReloadSettingsListener  # noqa: E402, F401
 from .plugins.stop_worker_execution import (  # noqa: E402
     StopOpenaiExecutionCommand,  # noqa: F401
