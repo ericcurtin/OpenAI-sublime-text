@@ -134,11 +134,6 @@ class CommonMethods:
         OpenAIInputPanelController.show(window, view, assistant, inputs)
 
     @classmethod
-    def save_input(cls, user_input: str, window: Window):
-        logger.debug(f'user_input: {user_input}')
-        window.settings().set('OPENAI_INPUT_TMP_STORAGE', user_input)
-
-    @classmethod
     def handle_input(
         cls, input: str, view: View, assistant: AssistantSettings, user_input: List[SublimeInputContent]
     ):

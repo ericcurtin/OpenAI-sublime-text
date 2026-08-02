@@ -64,7 +64,11 @@ You can interact with the AI in several ways, primarily through commands availab
         *   Select an "output_mode" (inline `Phantom` or a chat `View` in a panel/new tab).
         This command automatically includes any files you've marked for context (see "Additional Request Context Management" below).
     *   **`OpenAI: New Message`**: This command sends your input directly using the assistant and output mode that were last selected or are currently active. It's quicker if you're consistently using the same settings. This command also includes any files marked for context.
-3.  **Input Your Prompt:** An input panel will appear, allowing you to type your question or instruction for the AI.
+3.  **Input Your Prompt:** A multiline input panel will appear, allowing you to type your question or instruction for the AI.
+    * Press `Cmd+Enter` on macOS or `Ctrl+Enter` on Windows/Linux to submit.
+    * Press `Esc` to close the panel and keep the current draft for the next time you open it.
+    * At the first row and first column, press `Up` to browse older submitted prompts. While browsing history, press `Down` to move toward newer prompts and eventually restore the draft you started with.
+    * Pasting with `Cmd+V` or `Ctrl+V` wraps clipboard text in a Markdown code block.
 4.  **View Response:**
     *   The AI's response will typically appear in the OpenAI output panel.
     *   If you chose "Phantom" mode (with `OpenAI: Chat Model Select`), the response will appear as an inline overlay.

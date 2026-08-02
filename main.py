@@ -18,6 +18,10 @@ from .plugins.openai_panel import OpenaiPanelCommand  # noqa: E402, F401
 from .plugins.output_panel import SharedOutputPanelListener  # noqa: E402, F401
 from .plugins.phantom_streamer import PhantomStreamer  # noqa: E402, F401
 from .plugins.input_panel import (  # noqa: E402, F401
+    OpenaiCancelInputPanelCommand,
+    OpenaiCancelInputPanelFromViewCommand,
+    OpenaiInputHistoryNextCommand,
+    OpenaiInputHistoryPreviousCommand,
     OpenaiInputPanelEventListener,
     OpenaiPasteAsCodeBlockCommand,
     OpenaiSubmitInputPanelCommand,
