@@ -1,5 +1,45 @@
 [
     {
+        "keys": ["primary+enter"],
+        "command": "openai_submit_input_panel_from_view",
+        "context": [
+            { "key": "panel_has_focus" },
+            { "key": "panel", "operand": "output.openai_input" }
+        ]
+    },
+    {
+        "keys": ["super+enter"],
+        "command": "openai_submit_input_panel_from_view",
+        "context": [
+            { "key": "panel_has_focus" },
+            { "key": "panel", "operand": "output.openai_input" }
+        ]
+    },
+    {
+        "keys": ["super+keypad_enter"],
+        "command": "openai_submit_input_panel_from_view",
+        "context": [
+            { "key": "panel_has_focus" },
+            { "key": "panel", "operand": "output.openai_input" }
+        ]
+    },
+    {
+        "keys": ["primary+v"],
+        "command": "openai_paste_as_code_block",
+        "context": [
+            { "key": "panel_has_focus" },
+            { "key": "panel", "operand": "output.openai_input" }
+        ]
+    },
+    {
+        "keys": ["escape"],
+        "command": "openai_cancel_input_panel_from_view",
+        "context": [
+            { "key": "panel_has_focus" },
+            { "key": "panel", "operand": "output.openai_input" }
+        ]
+    },
+    {
         "keys": ["ctrl+c"],
         "command": "stop_openai_execution",
         "context": [

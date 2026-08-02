@@ -20,6 +20,7 @@ from .buffer import BufferContentManager
 from .errors.OpenAIException import WrongUserInputException, present_error, present_error_str
 from .function_handler import FunctionHandler
 from .image_handler import ImageValidator
+from .input_panel import OpenAIInputPanelController
 from .load_model import get_cache_path
 from .output_panel import SharedOutputPanelListener
 from .phantom_streamer import PhantomStreamer
@@ -119,18 +120,7 @@ class CommonMethods:
         valid_input = ImageValidator.get_valid_image_input('text')
         window = view.window() or sublime.active_window()
         logger.debug('handle_image_input hit')
-        sublime.active_window().show_input_panel(
-            'Command for Image: ',
-            window.settings().get('OPENAI_INPUT_TMP_STORAGE') or '',  # type: ignore
-            lambda user_input: cls.handle_input(
-                user_input,
-                view,
-                assistant,
-                inputs,
-            ),
-            lambda user_input: cls.save_input(user_input, window),
-            lambda: cls.save_input('', window),
-        )
+        OpenAIInputPanelController.show(window, view, assistant, inputs)
 
     @classmethod
     def handle_chat_completion(
@@ -141,23 +131,7 @@ class CommonMethods:
     ):
         window = view.window() or sublime.active_window()
         logger.debug('handle_chat_completion hit')
-        sublime.active_window().show_input_panel(
-            'Question:',
-            window.settings().get('OPENAI_INPUT_TMP_STORAGE') or '',  # type: ignore
-            lambda user_input: cls.handle_input(
-                user_input,
-                view,
-                assistant,
-                inputs,
-            ),
-            lambda user_input: cls.save_input(user_input, window),
-            lambda: cls.save_input('', window),
-        )
-
-    @classmethod
-    def save_input(cls, user_input: str, window: Window):
-        logger.debug(f'user_input: {user_input}')
-        window.settings().set('OPENAI_INPUT_TMP_STORAGE', user_input)
+        OpenAIInputPanelController.show(window, view, assistant, inputs)
 
     @classmethod
     def handle_input(
