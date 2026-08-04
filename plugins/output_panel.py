@@ -7,6 +7,13 @@ from sublime import Settings, View, Window, load_settings
 from sublime_plugin import EventListener
 
 from .load_model import get_cache_path
+from .vendor.sublime_chat_ui.presentation import (
+    PanelPresentation,
+    append_text,
+    apply_presentation,
+    clear_view,
+    syntax_resource,
+)
 
 
 class SharedOutputPanelListener(EventListener):
@@ -49,16 +56,20 @@ class SharedOutputPanelListener(EventListener):
         return output_panel
 
     def setup_common_presentation_style_(self, view: View, reversed: bool = False):
-        if self.markdown:
-            view.assign_syntax('Packages/Markdown/MultiMarkdown.sublime-syntax')
         scroll_past_end = not self.scroll_past_end if reversed else self.scroll_past_end
         gutter_enabled = not self.gutter_enabled if reversed else self.gutter_enabled
         line_numbers_enabled = not self.line_numbers_enabled if reversed else self.line_numbers_enabled
-
-        view.settings().set('scroll_past_end', scroll_past_end)
-        view.settings().set('gutter', gutter_enabled)
-        view.settings().set('line_numbers', line_numbers_enabled)
-        view.settings().set('set_unsaved_view_name', False)
+        presentation = PanelPresentation(
+            scroll_past_end=scroll_past_end,
+            gutter=gutter_enabled,
+            line_numbers=line_numbers_enabled,
+            set_unsaved_view_name=False,
+        )
+        apply_presentation(
+            view,
+            presentation,
+            syntax_resource() if self.markdown else None,
+        )
 
     def toggle_overscroll(self, window: Window, enabled: bool):
         view = self.get_output_view_(window=window)
@@ -66,7 +77,7 @@ class SharedOutputPanelListener(EventListener):
 
     def update_output_view(self, text: str, window: Window):
         view = self.get_output_view_(window=window)
-        view.run_command('append', {'characters': text, 'force': True})
+        append_text(view, text)
 
     def get_output_view_(self, window: Window, reversed: bool = False) -> View:
         view = self.get_active_tab_(window=window) or self.get_output_panel_(window=window)
@@ -99,10 +110,7 @@ class SharedOutputPanelListener(EventListener):
 
     def clear_output_panel(self, window: Window):
         output_panel = self.get_output_view_(window=window)
-        output_panel.set_read_only(False)
-        output_panel.run_command('select_all')
-        output_panel.run_command('right_delete')
-        output_panel.set_read_only(True)
+        clear_view(output_panel)
 
     ## FIXME: This command doesn't work as expected at first run
     ## despite that textpoint provides correct value.

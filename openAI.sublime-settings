@@ -17,9 +17,8 @@
 // See README.md for more details on chat history management.
 //
 {
-    // Apply Sublime Text markdown syntax highlight to OpenAI completion output view text.
-    // Affects only `"output_mode": "view"`.
-    // `MultimarkdownEditing` package highly recommended to install to apply syntax highlight for a wider range of languages.
+    // Apply the bundled shared Chat Markdown syntax to OpenAI completion output views.
+    // The syntax is shipped with the plugin; no separate Markdown package is required.
     "markdown": true,
 
     // Settings that configures presentation of a chat view for both output view and chat tap

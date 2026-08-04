@@ -9,6 +9,10 @@ from llm_runner import AssistantSettings, SublimeInputContent  # type: ignore
 from sublime import Region, View, Window
 from sublime_plugin import EventListener, TextCommand, WindowCommand
 
+from .vendor.sublime_chat_ui.history import PromptHistorySession
+from .vendor.sublime_chat_ui.markdown import fenced_code
+from .vendor.sublime_chat_ui.presentation import prepare_input_panel, replace_content, view_text
+
 logger = logging.getLogger(__name__)
 
 
@@ -17,44 +21,6 @@ class PendingInputRequest:
     source_view: View
     assistant: AssistantSettings | None
     inputs: List[SublimeInputContent]
-
-
-@dataclass
-class PromptHistorySession:
-    index: int | None = None
-    draft: str = ''
-
-    @property
-    def browsing(self) -> bool:
-        return self.index is not None
-
-    def reset(self) -> None:
-        self.index = None
-        self.draft = ''
-
-    def previous(self, history: List[str], current_text: str) -> str | None:
-        if not history:
-            return None
-
-        if self.index is None:
-            self.draft = current_text
-            self.index = len(history) - 1
-        elif self.index > 0:
-            self.index -= 1
-
-        return history[self.index]
-
-    def next(self, history: List[str]) -> str | None:
-        if self.index is None:
-            return None
-
-        if self.index < len(history) - 1:
-            self.index += 1
-            return history[self.index]
-
-        draft = self.draft
-        self.reset()
-        return draft
 
 
 class OpenAIInputPanelController:
@@ -77,14 +43,11 @@ class OpenAIInputPanelController:
 
     @staticmethod
     def _replace_panel_content(panel: View, text: str) -> None:
-        panel.run_command('select_all')
-        panel.run_command('right_delete')
-        if text:
-            panel.run_command('append', {'characters': text, 'force': True})
+        replace_content(panel, text)
 
     @staticmethod
     def panel_text(panel: View) -> str:
-        return panel.substr(Region(0, panel.size()))
+        return view_text(panel)
 
     @classmethod
     def get_draft(cls, window: Window) -> str:
@@ -159,23 +122,8 @@ class OpenAIInputPanelController:
             inputs=inputs,
         )
 
-        panel = window.create_output_panel(cls.PANEL_NAME)
-        panel.set_read_only(False)
-        panel.assign_syntax('Packages/Markdown/MultiMarkdown.sublime-syntax')
-        panel.settings().set('scroll_past_end', True)
-        panel.settings().set('gutter', True)
-        panel.settings().set('line_numbers', False)
-        panel.settings().set('fold_buttons', False)
-        panel.settings().set('word_wrap', True)
         cls.reset_history_session(window)
-        cls._replace_panel_content(panel, cls.get_draft(window))
-
-        panel.sel().clear()
-        panel.sel().add(Region(panel.size()))
-
-        window.run_command('show_panel', {'panel': f'output.{cls.PANEL_NAME}'})
-        window.focus_view(panel)
-        panel.show(panel.size())
+        prepare_input_panel(window, cls.PANEL_NAME, cls.get_draft(window))
 
     @classmethod
     def get_pending_request(cls, window: Window) -> PendingInputRequest | None:
@@ -296,7 +244,7 @@ class OpenaiPasteAsCodeBlockCommand(TextCommand):
         if not clipboard:
             return
 
-        block = f"```\n{clipboard.rstrip(chr(10))}\n```\n\n"
+        block = fenced_code(clipboard)
         selections = list(self.view.sel())
 
         if not selections:

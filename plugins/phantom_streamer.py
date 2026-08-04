@@ -21,6 +21,7 @@ from sublime import (
 
 from .load_model import get_cache_path
 from .output_panel import SharedOutputPanelListener
+from .vendor.sublime_chat_ui.presentation import syntax_resource
 from .response_manager import ResponseManager
 from .utils import extract_code_blocks
 
@@ -131,7 +132,7 @@ class PhantomStreamer:
             elif attribute == PhantomActions.new_file.value:
                 new_tab = (self.view.window() or active_window()).new_file(
                     flags=NewFileFlags.ADD_TO_SELECTION | NewFileFlags.CLEAR_TO_RIGHT,
-                    syntax='Packages/Markdown/MultiMarkdown.sublime-syntax',
+                    syntax=syntax_resource(),
                 )
                 logger.debug(f'self.is_discardable: {self.is_discardable}')
                 new_tab.set_scratch(self.is_discardable)

@@ -257,6 +257,18 @@ You can setup it up by overriding the proxy property in the `OpenAI completion` 
 }
 ```
 
+## Development
+
+### Shared chat UI
+
+Panel primitives and the fixed Chat Markdown syntax are vendored from the
+source-only sibling repository `sublime-chat-ui`. Edit that source repository,
+then update this read-only subtree with:
+
+```bash
+./scripts/update_sublime_chat_ui.sh <ref>
+```
+
 ## Disclaimers
 
 > [!WARNING]

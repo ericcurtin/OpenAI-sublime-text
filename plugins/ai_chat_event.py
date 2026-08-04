@@ -10,8 +10,7 @@ from sublime_plugin import ViewEventListener
 #     @classmethod
 #     def is_applicable(cls, settings) -> bool:
 #         return (
-#             settings.get('syntax') == 'Packages/Markdown/MultiMarkdown.sublime-syntax'
-#             or settings.get('syntax') == 'Packages/Markdown/PlainText.sublime-syntax'
+#             settings.get('syntax', '').endswith('/Syntaxes/ChatMarkdown.sublime-syntax')
 #         )
 
 #     def on_activated(self) -> None:
