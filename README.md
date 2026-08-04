@@ -30,7 +30,7 @@ Works with OpenAI Responses, Anthropic Claude, Google Gemini and the whole zoo o
 - Remote llm service provider API key, e.g. [OpenAI](https://platform.openai.com)
 - Optional [Anthropic](https://www.anthropic.com/api), [Google Gemini](https://ai.google.dev/) or other provider API key depending on your assistant setup.
 
-Package Control keeps Sublime Text builds 4050–4204 on the frozen 6.0.0 /
+Package Control keeps Sublime Text builds 4050–4204 on the frozen 6.1.0 /
 Python 3.8-compatible release line.
 
 ## Installation
