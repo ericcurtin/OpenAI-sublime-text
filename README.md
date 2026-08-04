@@ -25,10 +25,13 @@ Works with OpenAI Responses, Anthropic Claude, Google Gemini and the whole zoo o
 
 ## Requirements
 
-- Sublime Text 4
+- Sublime Text build 4205 or newer (Python 3.14 plugin host)
 - **llama.cpp**, **ollama** installed _OR_
 - Remote llm service provider API key, e.g. [OpenAI](https://platform.openai.com)
 - Optional [Anthropic](https://www.anthropic.com/api), [Google Gemini](https://ai.google.dev/) or other provider API key depending on your assistant setup.
+
+Package Control keeps Sublime Text builds 4050–4204 on the frozen 6.1.0 /
+Python 3.8-compatible release line.
 
 ## Installation
 
