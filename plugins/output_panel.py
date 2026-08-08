@@ -9,6 +9,7 @@ from sublime_plugin import EventListener
 from .load_model import get_cache_path
 from .vendor.sublime_chat_ui.presentation import (
     PanelPresentation,
+    append_markdown_section,
     append_text,
     apply_presentation,
     clear_view,
@@ -79,6 +80,10 @@ class SharedOutputPanelListener(EventListener):
         view = self.get_output_view_(window=window)
         append_text(view, text)
 
+    def update_output_section(self, header: str, window: Window):
+        view = self.get_output_view_(window=window)
+        append_markdown_section(view, header)
+
     def get_output_view_(self, window: Window, reversed: bool = False) -> View:
         view = self.get_active_tab_(window=window) or self.get_output_panel_(window=window)
         view.set_name(self.OUTPUT_PANEL_NAME)
@@ -93,14 +98,14 @@ class SharedOutputPanelListener(EventListener):
             ## TODO: Make me enumerated, e.g. Question 1, Question 2 etc.
             if item.role == Roles.User:
                 if item.path:
-                    self.update_output_view('\n\n## Selection\n\n', window)
+                    self.update_output_section('## Selection\n\n', window)
                     self.update_output_view(f'Path: `{item.path}`', window)
                     self.update_output_view('\n', window)
                 else:
-                    self.update_output_view('\n\n## Question\n\n', window)
+                    self.update_output_section('## Question\n\n', window)
 
             elif item.role == Roles.Assistant:
-                self.update_output_view('\n\n## Answer\n\n', window)
+                self.update_output_section('## Answer\n\n', window)
             if item.role == Roles.Tool:
                 self.update_output_view('item.tool_call_id', window)
             else:
