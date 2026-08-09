@@ -90,6 +90,22 @@ These commands will append recent lines from the respective output panels (Build
 *   **`OpenAI: Refresh Chat`**: Reloads the chat history into the output panel or tab.
 *   **`OpenAI: Reset Chat History`**: Clears the chat history for the current context (project-specific or global).
 
+### Chat section folding
+
+Chat roles are rendered as hard-bounded Markdown sections such as `Question`,
+`Selection`, and `Answer`. Configure section names to fold automatically in
+`openAI.sublime-settings`; matching is case-insensitive and excludes the leading
+Markdown hashes:
+
+```json
+{
+    "fold_sections": ["Question", "Answer"]
+}
+```
+
+Manual fold and unfold choices remain local to each chat view and survive
+subsequent streaming updates.
+
 ### Chat history management
 
 You can separate a chat history and assistant settings for a given project by appending the following snippet to its settings:

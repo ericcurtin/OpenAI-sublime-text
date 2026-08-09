@@ -16,6 +16,12 @@ from .plugins.sheet_toggle import ToggleViewAiContextIncludedCommand, SelectShee
 from .plugins.openai import Openai  # noqa: E402, F401
 from .plugins.openai_panel import OpenaiPanelCommand  # noqa: E402, F401
 from .plugins.output_panel import SharedOutputPanelListener  # noqa: E402, F401
+from .plugins.section_folding import (  # noqa: E402, F401
+    OpenaiApplySectionEditCommand,
+    OpenaiSectionFoldingListener,
+    plugin_loaded,
+    plugin_unloaded,
+)
 from .plugins.phantom_streamer import PhantomStreamer  # noqa: E402, F401
 from .plugins.input_panel import (  # noqa: E402, F401
     OpenaiCancelInputPanelCommand,

@@ -21,6 +21,10 @@
     // The syntax is shipped with the plugin; no separate Markdown package is required.
     "markdown": true,
 
+    // Chat section names to fold automatically. Names are matched without the
+    // leading Markdown hashes and are case-insensitive, e.g. ["Question", "Answer"].
+    "fold_sections": [],
+
     // Settings that configures presentation of a chat view for both output view and chat tap
     "chat_presentation": {
         // Toggles whether to present gutter itself
