@@ -9,7 +9,9 @@ from llm_runner import AssistantSettings, SublimeInputContent  # type: ignore
 from sublime import Region, View, Window
 from sublime_plugin import EventListener, TextCommand, WindowCommand
 
+from .section_folding import is_chat_view
 from .vendor.sublime_chat_ui.history import PromptHistorySession
+from .vendor.sublime_chat_ui.links import local_file_target, markdown_link_at
 from .vendor.sublime_chat_ui.markdown import fenced_code
 from .vendor.sublime_chat_ui.presentation import prepare_input_panel, replace_content, view_text
 
@@ -272,6 +274,10 @@ class OpenaiInputPanelEventListener(EventListener):
         return None
 
     def on_text_command(self, view: View, command_name: str, args: Dict[str, Any] | None):
+        chat_link_result = self._open_chat_link(view, command_name, args)
+        if chat_link_result is not None:
+            return chat_link_result
+
         if not OpenAIInputPanelController.is_input_panel_view(view):
             return None
 
@@ -295,6 +301,53 @@ class OpenaiInputPanelEventListener(EventListener):
             OpenAIInputPanelController.reset_history_session(window)
 
         return None
+
+    def _open_chat_link(
+        self,
+        view: View,
+        command_name: str,
+        args: Dict[str, Any] | None,
+    ):
+        command_args = args or {}
+        event = command_args.get('event')
+        if (
+            command_name != 'drag_select'
+            or not is_chat_view(view)
+            or not isinstance(event, dict)
+            or command_args.get('by')
+            or command_args.get('extend')
+            or command_args.get('subtractive')
+        ):
+            return None
+
+        x = event.get('x')
+        y = event.get('y')
+        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+            return None
+
+        point = view.window_to_text((x, y))
+        if view.score_selector(point, 'meta.link.inline') <= 0:
+            return None
+
+        line = view.line(point)
+        link = markdown_link_at(view.substr(line), point - line.begin())
+        if link is None:
+            return None
+
+        target = local_file_target(link.destination)
+        if target is None:
+            return None
+
+        window = view.window()
+        if window is None:
+            return None
+
+        group, _ = window.get_view_index(view)
+        flags = sublime.ENCODED_POSITION
+        if command_args.get('additive'):
+            flags |= sublime.ADD_TO_SELECTION
+        window.open_file(target, flags, group)
+        return ('noop', None)
 
     def on_pre_close_window(self, window: Window) -> None:
         if OpenAIInputPanelController.get_pending_request(window) is not None:
