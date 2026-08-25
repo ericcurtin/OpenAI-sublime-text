@@ -7,6 +7,13 @@ from sublime import Settings, View, Window, load_settings
 from sublime_plugin import EventListener
 
 from .load_model import get_cache_path
+from .vendor.sublime_chat_ui.presentation import (
+    PanelPresentation,
+    apply_presentation,
+    clear_view,
+    syntax_resource,
+)
+from .section_folding import SECTION_PROJECTION, mark_chat_view
 
 
 class SharedOutputPanelListener(EventListener):
@@ -36,6 +43,7 @@ class SharedOutputPanelListener(EventListener):
 
         new_view = window.new_file()
         new_view.set_scratch(True)
+        mark_chat_view(new_view)
         self.setup_common_presentation_style_(new_view, reversed=self.reverse_for_tab)
         ## FIXME: This is temporary, should be moved to plugin settings
         new_view.set_name(self.OUTPUT_PANEL_NAME)
@@ -45,20 +53,25 @@ class SharedOutputPanelListener(EventListener):
         output_panel = window.find_output_panel(self.OUTPUT_PANEL_NAME) or window.create_output_panel(
             self.OUTPUT_PANEL_NAME
         )
+        mark_chat_view(output_panel)
         self.setup_common_presentation_style_(output_panel)
         return output_panel
 
     def setup_common_presentation_style_(self, view: View, reversed: bool = False):
-        if self.markdown:
-            view.assign_syntax('Packages/Markdown/MultiMarkdown.sublime-syntax')
         scroll_past_end = not self.scroll_past_end if reversed else self.scroll_past_end
         gutter_enabled = not self.gutter_enabled if reversed else self.gutter_enabled
         line_numbers_enabled = not self.line_numbers_enabled if reversed else self.line_numbers_enabled
-
-        view.settings().set('scroll_past_end', scroll_past_end)
-        view.settings().set('gutter', gutter_enabled)
-        view.settings().set('line_numbers', line_numbers_enabled)
-        view.settings().set('set_unsaved_view_name', False)
+        presentation = PanelPresentation(
+            scroll_past_end=scroll_past_end,
+            gutter=gutter_enabled,
+            line_numbers=line_numbers_enabled,
+            set_unsaved_view_name=False,
+        )
+        apply_presentation(
+            view,
+            presentation,
+            syntax_resource() if self.markdown else None,
+        )
 
     def toggle_overscroll(self, window: Window, enabled: bool):
         view = self.get_output_view_(window=window)
@@ -66,7 +79,11 @@ class SharedOutputPanelListener(EventListener):
 
     def update_output_view(self, text: str, window: Window):
         view = self.get_output_view_(window=window)
-        view.run_command('append', {'characters': text, 'force': True})
+        SECTION_PROJECTION.append(view, text)
+
+    def update_output_section(self, header: str, window: Window):
+        view = self.get_output_view_(window=window)
+        SECTION_PROJECTION.start(view, header)
 
     def get_output_view_(self, window: Window, reversed: bool = False) -> View:
         view = self.get_active_tab_(window=window) or self.get_output_panel_(window=window)
@@ -82,14 +99,14 @@ class SharedOutputPanelListener(EventListener):
             ## TODO: Make me enumerated, e.g. Question 1, Question 2 etc.
             if item.role == Roles.User:
                 if item.path:
-                    self.update_output_view('\n\n## Selection\n\n', window)
+                    self.update_output_section('## Selection\n\n', window)
                     self.update_output_view(f'Path: `{item.path}`', window)
                     self.update_output_view('\n', window)
                 else:
-                    self.update_output_view('\n\n## Question\n\n', window)
+                    self.update_output_section('## Question\n\n', window)
 
             elif item.role == Roles.Assistant:
-                self.update_output_view('\n\n## Answer\n\n', window)
+                self.update_output_section('## Answer\n\n', window)
             if item.role == Roles.Tool:
                 self.update_output_view('item.tool_call_id', window)
             else:
@@ -99,10 +116,8 @@ class SharedOutputPanelListener(EventListener):
 
     def clear_output_panel(self, window: Window):
         output_panel = self.get_output_view_(window=window)
-        output_panel.set_read_only(False)
-        output_panel.run_command('select_all')
-        output_panel.run_command('right_delete')
-        output_panel.set_read_only(True)
+        SECTION_PROJECTION.reset(output_panel)
+        clear_view(output_panel)
 
     ## FIXME: This command doesn't work as expected at first run
     ## despite that textpoint provides correct value.

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 from llm_runner import drop_all  # type: ignore
-from sublime import Edit, Region, View, active_window, load_settings
+from sublime import Edit, View, active_window, load_settings
 from sublime_plugin import TextCommand
 
 from .assistant_settings import CommandMode
@@ -42,11 +42,7 @@ class Openai(TextCommand):
         path = get_cache_path(view)
 
         drop_all(path)
-        view = listener.get_output_view_(window=window)
-        view.set_read_only(False)
-        region = Region(0, view.size())
-        view.erase(edit, region)
-        view.set_read_only(True)
+        listener.clear_output_panel(window)
 
     @classmethod
     def create_new_tab(cls, listener: SharedOutputPanelListener):

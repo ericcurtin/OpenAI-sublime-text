@@ -15,5 +15,7 @@ class ReloadSettingsListener(sublime_plugin.EventListener):
             logger.debug('openAI.sublime-settings relodaer triggered')
             # Reload the plugin settings by calling the plugin_loaded function directly.
             from .openai_base import plugin_loaded
+            from .section_folding import sync_all_chat_views
 
             plugin_loaded()
+            sync_all_chat_views()

@@ -18,13 +18,13 @@ class ResponseManager:
         for item in content:
             if item.path:
                 if item.input_kind == InputKind.ViewSelection:
-                    ResponseManager.update_output_panel_(listner, window, '\n\n## Selection\n\n')
+                    listner.update_output_section('## Selection\n\n', window)
                     ResponseManager.update_output_panel_(listner, window, f'Path: `{item.path}`')
                     ResponseManager.update_output_panel_(listner, window, '\n')
                 elif item.input_kind == InputKind.Sheet:
                     continue
             else:
-                ResponseManager.update_output_panel_(listner, window, '\n\n## Question\n\n')
+                listner.update_output_section('## Question\n\n', window)
 
             ResponseManager.update_output_panel_(listner, window, item.content)
 
@@ -33,7 +33,7 @@ class ResponseManager:
         listner: SharedOutputPanelListener,
         window: Window,
     ):
-        ResponseManager.update_output_panel_(listner, window, '\n\n## Answer\n\n')
+        listner.update_output_section('## Answer\n\n', window)
         listner.show_panel(window=window)
         listner.scroll_to_botton(window=window)
 
