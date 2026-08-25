@@ -1,8 +1,12 @@
 from json import dumps, loads
 from typing import Optional, Any
-from sublime import Settings
 import sys
-from unittest import TestCase
+from unittest import SkipTest, TestCase
+
+try:
+    from sublime import Settings
+except ModuleNotFoundError as exc:
+    raise SkipTest('requires the Sublime Text plugin host') from exc
 
 
 network_client_module = sys.modules['OpenAI completion.plugins.openai_network_client']
