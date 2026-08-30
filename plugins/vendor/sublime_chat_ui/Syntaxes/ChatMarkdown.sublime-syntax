@@ -1,0 +1,145 @@
+%YAML 1.2
+---
+name: Chat Markdown
+scope: text.html.markdown
+version: 2
+extends: Packages/Markdown/Markdown.sublime-syntax
+
+variables:
+  chat_section_break: '-{10}[ \t]*$\n?'
+
+contexts:
+  # Keep Sublime's Markdown implementation and only replace heading transitions
+  # so each heading body receives a stable section scope for transcript folding.
+
+  atx-heading1-content:
+    - meta_scope: markup.heading.1.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - match: '{{atx_heading_end}}'
+      captures:
+        1: punctuation.definition.heading.end.markdown
+        2: meta.whitespace.newline.markdown
+      set: section1-body
+    - include: atx-heading-content
+
+  atx-heading2-content:
+    - meta_scope: markup.heading.2.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - match: '{{atx_heading_end}}'
+      captures:
+        1: punctuation.definition.heading.end.markdown
+        2: meta.whitespace.newline.markdown
+      set: section2-body
+    - include: atx-heading-content
+
+  atx-heading3-content:
+    - meta_scope: markup.heading.3.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - match: '{{atx_heading_end}}'
+      captures:
+        1: punctuation.definition.heading.end.markdown
+        2: meta.whitespace.newline.markdown
+      set: section3-body
+    - include: atx-heading-content
+
+  atx-heading4-content:
+    - meta_scope: markup.heading.4.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - match: '{{atx_heading_end}}'
+      captures:
+        1: punctuation.definition.heading.end.markdown
+        2: meta.whitespace.newline.markdown
+      set: section4-body
+    - include: atx-heading-content
+
+  atx-heading5-content:
+    - meta_scope: markup.heading.5.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - match: '{{atx_heading_end}}'
+      captures:
+        1: punctuation.definition.heading.end.markdown
+        2: meta.whitespace.newline.markdown
+      set: section5-body
+    - include: atx-heading-content
+
+  atx-heading6-content:
+    - meta_scope: markup.heading.6.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - match: '{{atx_heading_end}}'
+      captures:
+        1: punctuation.definition.heading.end.markdown
+        2: meta.whitespace.newline.markdown
+      set: section6-body
+    - include: atx-heading-content
+
+  setext-heading1:
+    - meta_scope: markup.heading.1.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - match: '{{setext_heading1_end}}'
+      captures:
+        1: punctuation.definition.heading.setext.markdown
+        2: meta.whitespace.newline.markdown
+      set: section1-body
+    - include: setext-heading-content
+
+  setext-heading2:
+    - meta_scope: markup.heading.2.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - match: '{{setext_heading2_end}}'
+      captures:
+        1: punctuation.definition.heading.setext.markdown
+        2: meta.whitespace.newline.markdown
+      set: section2-body
+    - match: '{{setext_heading1_escape}}'
+      fail: setext-headings-or-paragraphs
+    - include: setext-heading-content
+
+  # A transcript boundary is stronger than Markdown content. It terminates an
+  # unterminated fenced block without inserting a synthetic closing fence.
+  fenced-code-blocks:
+    - match: '{{fenced_code_block_start}}'
+      captures:
+        0: meta.code-fence.definition.begin.markdown-gfm
+        1: punctuation.definition.raw.code-fence.begin.markdown
+      embed: fenced-code-block-body
+      escape: (?:^{{fenced_code_block_end}}|(?=^{{chat_section_break}}))
+      escape_captures:
+        0: meta.code-fence.definition.end.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+        2: meta.fold.code-fence.end.markdown
+
+  section1-body:
+    - meta_scope: meta.section.heading.1.markdown
+    - match: '^(?={{chat_section_break}})'
+      pop: 1
+    - include: markdown
+
+  section2-body:
+    - meta_scope: meta.section.heading.2.markdown
+    - match: '^(?={{chat_section_break}})'
+      pop: 1
+    - include: markdown
+
+  section3-body:
+    - meta_scope: meta.section.heading.3.markdown
+    - match: '^(?={{chat_section_break}})'
+      pop: 1
+    - include: markdown
+
+  section4-body:
+    - meta_scope: meta.section.heading.4.markdown
+    - match: '^(?={{chat_section_break}})'
+      pop: 1
+    - include: markdown
+
+  section5-body:
+    - meta_scope: meta.section.heading.5.markdown
+    - match: '^(?={{chat_section_break}})'
+      pop: 1
+    - include: markdown
+
+  section6-body:
+    - meta_scope: meta.section.heading.6.markdown
+    - match: '^(?={{chat_section_break}})'
+      pop: 1
+    - include: markdown

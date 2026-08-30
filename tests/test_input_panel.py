@@ -2,6 +2,7 @@ import importlib
 import sys
 import types
 import unittest
+from unittest.mock import patch
 
 
 class FakeRegion:
@@ -44,6 +45,7 @@ class FakeWindow:
         self.window_settings = FakeSettings()
         self.panel = None
         self.commands = []
+        self.opened = []
 
     def id(self):
         return self.window_id
@@ -59,6 +61,12 @@ class FakeWindow:
 
     def run_command(self, command, args=None):
         self.commands.append((command, args))
+
+    def get_view_index(self, _view):
+        return 1, 0
+
+    def open_file(self, target, flags, group):
+        self.opened.append((target, flags, group))
 
 
 class FakePanel:
@@ -92,6 +100,35 @@ class FakePanel:
         return row, column
 
 
+class FakeChatView:
+    def __init__(self, window, text='[source](/workspace/source.py:12)'):
+        self._window = window
+        self.text = text
+        self.view_settings = FakeSettings()
+        self.view_settings.set('openai_is_chat_transcript', True)
+
+    def id(self):
+        return 8
+
+    def settings(self):
+        return self.view_settings
+
+    def window_to_text(self, _coordinates):
+        return 3
+
+    def score_selector(self, _point, _selector):
+        return 1
+
+    def line(self, _point):
+        return FakeRegion(0, len(self.text))
+
+    def substr(self, region):
+        return self.text[region.begin() : region.end()]
+
+    def window(self):
+        return self._window
+
+
 def load_input_panel_module():
     module_names = ('sublime', 'sublime_plugin', 'llm_runner')
     original_modules = {name: sys.modules.get(name) for name in module_names}
@@ -102,6 +139,8 @@ def load_input_panel_module():
     sublime.Window = object
     sublime.status_message = lambda message: None
     sublime.get_clipboard = lambda: ''
+    sublime.ENCODED_POSITION = 1
+    sublime.ADD_TO_SELECTION = 32
 
     sublime_plugin = types.ModuleType('sublime_plugin')
     sublime_plugin.EventListener = object
@@ -263,6 +302,43 @@ class InputPanelEventListenerTests(unittest.TestCase):
             ),
             ('openai_input_history_next', None),
         )
+
+    def test_chat_markdown_link_opens_existing_file_target(self):
+        chat_view = FakeChatView(self.window)
+
+        with (
+            patch(
+                'plugins.input_panel.markdown_link_at',
+                return_value=types.SimpleNamespace(destination='/workspace/source.py:12'),
+            ),
+            patch(
+                'plugins.input_panel.local_file_target',
+                return_value='/workspace/source.py:12',
+            ),
+        ):
+            result = self.listener.on_text_command(
+                chat_view,
+                'drag_select',
+                {'event': {'x': 1, 'y': 2}},
+            )
+
+        self.assertEqual(result, ('noop', None))
+        self.assertEqual(
+            self.window.opened,
+            [('/workspace/source.py:12', input_panel.sublime.ENCODED_POSITION, 1)],
+        )
+
+    def test_modified_chat_selection_is_not_intercepted_as_link(self):
+        chat_view = FakeChatView(self.window)
+
+        result = self.listener.on_text_command(
+            chat_view,
+            'drag_select',
+            {'event': {'x': 1, 'y': 2}, 'extend': True},
+        )
+
+        self.assertIsNone(result)
+        self.assertEqual(self.window.opened, [])
 
 
 if __name__ == '__main__':
